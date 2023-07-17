@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { useTaksManagerStore } from '../stores/task-manger';
+import { useTaksManagerStore } from '@/stores/task-manger';
 
 const { updateTaskState } = useTaksManagerStore()
 

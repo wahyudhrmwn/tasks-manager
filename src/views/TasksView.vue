@@ -1,15 +1,18 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import Header from '../components/Header.vue';
-import File from '../components/Icons/File.vue';
-import { useTaksManagerStore } from '../stores/task-manger';
-import Task from '../components/Task.vue';
 import { useRoute } from 'vue-router';
-import Filter from '../components/Filter.vue';
+
+import Header from '@/components/Header.vue';
+import File from '@/components/Icons/File.vue';
+import { useTaksManagerStore } from '@/stores/task-manger';
+import { useModalStore } from '@/stores/modal';
+import Task from '@/components/Task.vue';
+import Filter from '@/components/Filter.vue';
 
 const store = useTaksManagerStore()
-const { tasks, projects } = storeToRefs(store)
+const { openAddTaskModal } = useModalStore();
+const { projects } = storeToRefs(store)
 const { filterTasksByProjectsAndStates } = store
 const route = useRoute()
 
@@ -28,7 +31,8 @@ const filteredTasks = computed(() => {
 
 <template>
   <main class="container">
-    <Header title="Task Manager" :icon="File" cta="+ Add New Task" nav-text="Projects" nav-to="/projects" />
+    <Header title="Task Manager" :icon="File" cta="+ Add New Task" nav-text="Projects" nav-to="/projects"
+      @click="openAddTaskModal" />
 
     <div class="filters">
       <Filter title="Filter by project" :data="projects" v-model="selectedProjects" />
@@ -41,9 +45,12 @@ const filteredTasks = computed(() => {
       }]" v-model="selectedStates" />
     </div>
 
-    <div class="tasks">
+    <div class="tasks" v-if="filteredTasks && filteredTasks.length">
       <Task v-for="(task, index) in filteredTasks" :key="index" :task="task" />
     </div>
+    <p v-else>
+      No tasks yet. Click on the button above to add one.
+    </p>
 
   </main>
 </template>

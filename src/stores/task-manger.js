@@ -50,6 +50,7 @@ export const useTaksManagerStore = defineStore("taskManager", () => {
       return {
         ...project,
         completedPercentage,
+        completed: completedPercentage === 100,
       };
     });
   });
@@ -92,10 +93,60 @@ export const useTaksManagerStore = defineStore("taskManager", () => {
     return filteredTasks;
   }
 
+  function filterProjectsByStates(states) {
+    if (states.length === 0) return projects.value;
+
+    const filteredProjects = projects.value.filter((project) => {
+      const stateMatch = states.includes(project.completed);
+      return stateMatch;
+    });
+    return filteredProjects;
+  }
+
+  function addTask(task) {
+    if (!task.name || !task.description || !task.project) {
+      alert("Please fill all the fields");
+      return;
+    }
+
+    const id = uuidv4();
+    const newTask = {
+      id,
+      name: task.name,
+      description: task.description,
+      completed: false,
+    };
+
+    const project = data.value.find((project) => project.id === task.project);
+    if (project) {
+      project.tasks.push(newTask);
+    }
+  }
+
+  function addProject(project) {
+    if (!project.name || !project.description) {
+      alert("Please fill all the fields");
+      return;
+    }
+
+    const id = uuidv4();
+    const newProject = {
+      id,
+      name: project.name,
+      description: project.description,
+      tasks: [],
+    };
+
+    data.value.push(newProject);
+  }
+
   return {
     projects,
     tasks,
     updateTaskState,
     filterTasksByProjectsAndStates,
+    filterProjectsByStates,
+    addTask,
+    addProject,
   };
 });

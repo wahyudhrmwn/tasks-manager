@@ -8,7 +8,7 @@
     </div>
     <div class="header-side">
       <Button v-if="navTo" :to="navTo" :title="navText" color="gray" />
-      <Button :title="cta" color="secondary" />
+      <Button :title="cta" color="secondary" @click="$emit('click')" />
     </div>
   </div>
 </template>
@@ -37,6 +37,8 @@ defineProps({
     type: String,
   }
 })
+
+defineEmits(['click'])
 </script>
 
 <style lang="scss" scoped>
