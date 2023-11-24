@@ -1,63 +1,33 @@
-<template>
-  <div>
-    <p v-if="title">{{ title }}
-    </p>
-    <div class="badges">
-      <Badge v-for="(item, index) in data" :key="index" :selected="modelValue.includes(item[valueLabel])"
-        @click="onClick(item[valueLabel])">
-        {{ item[titleLabel] }}
-      </Badge>
-
-      <span class="clear" v-if="modelValue && modelValue.length" @click="clear">
-        x clear
-      </span>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import Badge from './Badge.vue';
-
-const props = defineProps({
-  title: {
-    type: String,
-    required: true
-  },
-  data: {
-    type: Array,
-    required: true
-  },
-  modelValue: {
-    type: Array,
-    required: true
-  },
-  valueLabel: {
-    type: String,
-    default: 'id'
-  },
-  titleLabel: {
-    type: String,
-    default: 'name'
-  }
-})
-
-const emit = defineEmits(['update:modelValue'])
-
-const onClick = (value) => {
-  if (props.modelValue.includes(value)) {
-    emit('update:modelValue', props.modelValue.filter(item => item !== value))
-  } else {
-    emit('update:modelValue', [...props.modelValue, value])
-  }
-}
-
-const clear = () => {
-  emit('update:modelValue', [])
-}
+import {useTasksStore} from '@/stores/tasksStore.js';
+const store = useTasksStore();
 
 </script>
 
-<style lang="scss">
+<template>
+    <div class="filters">
+      <div>
+        <p>Filter by state</p>
+        <div class="badges">
+          <div 
+          @click="store.setFilter('todo')"
+          class="badge" :class="{selected : store.filterBy === 'todo'}">
+            To-Do
+          </div>
+          <div @click="store.setFilter('done')"
+          class="badge" :class="{selected : store.filterBy === 'done'}">
+            Done
+          </div>
+          <span @click="store.setFilter('')" v-if="store.filterBy" class="clear">
+            x clear
+          </span>
+        </div>
+      </div>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+
 .filters {
   display: flex;
   flex-direction: column;
@@ -77,10 +47,30 @@ const clear = () => {
     gap: 12px;
     margin: 14px 0;
     align-items: center;
+
+    .badge {
+        padding: 8px 7px;
+        background-color: var(--gray-color);
+        color: var(--black-color);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 16px;
+        letter-spacing: 0em;
+        text-align: left;
+        border-radius: 8px;
+        cursor: pointer;
+        user-select: none;
+        
+
+        &.selected {
+            background-color: #E42C5F;
+            color: var(--white-color);
+        }
+    }
   }
 
   .clear {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
     line-height: 16px;
     letter-spacing: 0em;
@@ -89,4 +79,5 @@ const clear = () => {
   }
 
 }
+
 </style>

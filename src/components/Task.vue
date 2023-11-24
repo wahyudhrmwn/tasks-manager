@@ -1,52 +1,59 @@
-<template>
-  <div class="task">
-    <h3>
-      {{ task.name }}
-    </h3>
-    <p>
-      {{ task.description }}
-    </p>
-    <span>
-      {{ task.project.name }}
-    </span>
-    <div class="task-check">
-      <input type="checkbox" :id="task.id" :checked="task.completed" @change="updateTaskStatus" />
-      <label :for="task.id">
-        {{ task.completed ? 'Done' : 'To-Do' }}
-      </label>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { useTaksManagerStore } from '@/stores/task-manger';
 
-const { updateTaskState } = useTaksManagerStore()
-
-const props = defineProps({
-  task: {
-    type: Object,
-    required: true
-  }
-})
-
-const updateTaskStatus = (event) => {
-  updateTaskState(props.task.id, event.target.checked)
-}
+const props = defineProps(['task']);
+import {useTasksStore} from '@/stores/tasksStore.js';
+const store = useTasksStore();
 
 </script>
 
+<template>
+    <div class="task">
+        <h3>
+            {{task.name}}
+        </h3>
+        <p>
+            {{task.description}}
+        </p>
+        <div class="task-check">
+            <input @click="store.toggleCompleted(task.id)" type="checkbox" :checked="task.completed" />
+            <label>
+            {{task.completed ? 'Done' : 'To-Do'}}
+            </label>
+        </div>
+    </div>
+</template>
+
 <style lang="scss" scoped>
+
 .task {
   display: flex;
   flex-direction: column;
   background-color: var(--white-color);
   color: var(--black-color);
-  padding: 16px;
+  padding: 25px;
   border-radius: 12px;
+  position: relative;
+
+  button.erase {
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    right: 8px;
+    top: 5px;
+    font-size: 12px;
+    color: red;
+    cursor: pointer;
+    display: none;
+  }
+
+  &:hover {
+    button.erase {
+      display: block;
+    }
+  }
 
   h3 {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 700;
     line-height: 21px;
     letter-spacing: 0em;
@@ -54,35 +61,26 @@ const updateTaskStatus = (event) => {
   }
 
   p {
-    margin-top: 12px;
-    font-size: 12px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    font-size: 16px;
     font-weight: 400;
     line-height: 16px;
     letter-spacing: 0em;
     text-align: left;
   }
 
-  span {
-    margin-top: 12px;
-    background-color: var(--gray-color);
-    border-radius: 6px;
-    width: fit-content;
-    padding-inline: 14px;
-    font-size: 10px;
-    font-weight: 400;
-    line-height: 13px;
-    letter-spacing: 0em;
-    text-align: left;
-  }
 
   .task-check {
-    align-self: end;
     display: flex;
     align-items: center;
-
+    justify-content: center;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 
     label {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 400;
       line-height: 16px;
       letter-spacing: 0em;
